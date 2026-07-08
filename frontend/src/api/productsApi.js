@@ -26,8 +26,8 @@ export async function compareProducts(ids, options = {}) {
   return unwrapData(response)
 }
 
-export async function listFarmerProducts(params = {}) {
-  const response = await apiClient.get('/farmer/products', { params })
+export async function listFarmerProducts(params = {}, options = {}) {
+  const response = await apiClient.get('/farmer/products', { params, signal: options.signal })
   return {
     ...unwrapData(response),
     meta: response.data?.meta,
@@ -50,5 +50,20 @@ export async function updateFarmerProduct(productId, formData) {
   const response = await apiClient.put(`/farmer/products/${productId}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
+  return unwrapData(response)
+}
+
+export async function updateFarmerProductQuantity(productId, quantityAvailable) {
+  const response = await apiClient.patch(`/farmer/products/${productId}/quantity`, { quantityAvailable })
+  return unwrapData(response)
+}
+
+export async function updateFarmerProductStatus(productId, status) {
+  const response = await apiClient.patch(`/farmer/products/${productId}/status`, { status })
+  return unwrapData(response)
+}
+
+export async function deleteFarmerProduct(productId) {
+  const response = await apiClient.delete(`/farmer/products/${productId}`)
   return unwrapData(response)
 }

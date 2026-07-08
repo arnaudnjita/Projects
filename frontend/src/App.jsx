@@ -9,6 +9,7 @@ import './App.css'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const ComparePage = lazy(() => import('./pages/ComparePage'))
+const FarmerDashboardPage = lazy(() => import('./pages/FarmerDashboardPage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
@@ -131,7 +132,13 @@ const router = createBrowserRouter([
         path: 'reset-password',
       },
       {
-        element: farmerPlaceholder('Farmer Dashboard', pageDescriptions.dashboard),
+        element: (
+          <FarmerOnlyRoute>
+            <LazyRoute>
+              <FarmerDashboardPage />
+            </LazyRoute>
+          </FarmerOnlyRoute>
+        ),
         path: 'farmer/dashboard',
       },
       {

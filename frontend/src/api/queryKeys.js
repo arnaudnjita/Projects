@@ -9,6 +9,7 @@ export const queryKeys = {
     all: ['products'],
     compare: (ids) => ['products', 'compare', ids],
     detail: (productId) => ['products', 'detail', productId],
+    farmerList: (filters = {}) => ['farmer', 'products', filters],
     list: (filters = {}) => ['products', 'list', filters],
     recent: ['products', 'recent'],
   },

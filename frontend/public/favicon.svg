@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CultivaX">
+  <rect width="64" height="64" rx="14" fill="#123F2D"/>
+  <path d="M34 14c13 2 20 10 22 23-14 5-28 2-36-8 2-7 6-12 14-15z" fill="#F7F8F4"/>
+  <path d="M17 47c10-12 22-20 36-25" fill="none" stroke="#F28C28" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -10,6 +10,7 @@ import './App.css'
 const HomePage = lazy(() => import('./pages/HomePage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
 const RoutePlaceholderPage = lazy(() => import('./pages/RoutePlaceholderPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
@@ -88,7 +89,11 @@ const router = createBrowserRouter([
         index: true,
       },
       {
-        element: placeholder('Marketplace', pageDescriptions.marketplace),
+        element: (
+          <LazyRoute>
+            <MarketplacePage />
+          </LazyRoute>
+        ),
         path: 'marketplace',
       },
       {

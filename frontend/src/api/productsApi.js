@@ -1,20 +1,20 @@
 import apiClient, { unwrapData } from './apiClient'
 
-export async function listProducts(params = {}) {
-  const response = await apiClient.get('/products', { params })
+export async function listProducts(params = {}, options = {}) {
+  const response = await apiClient.get('/products', { params, signal: options.signal })
   return {
     ...unwrapData(response),
     meta: response.data?.meta,
   }
 }
 
-export async function listRecentProducts(params = {}) {
-  const response = await apiClient.get('/products/recent', { params })
+export async function listRecentProducts(params = {}, options = {}) {
+  const response = await apiClient.get('/products/recent', { params, signal: options.signal })
   return unwrapData(response)
 }
 
-export async function getProduct(productId) {
-  const response = await apiClient.get(`/products/${productId}`)
+export async function getProduct(productId, options = {}) {
+  const response = await apiClient.get(`/products/${productId}`, { signal: options.signal })
   return unwrapData(response)
 }
 

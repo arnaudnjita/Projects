@@ -5,6 +5,7 @@ const helmet = require('helmet')
 
 const env = require('./config/env')
 const apiRoutes = require('./routes/apiRoutes')
+const uploadRoutes = require('./routes/uploadRoutes')
 const errorHandler = require('./middleware/errorHandler')
 const notFoundHandler = require('./middleware/notFoundHandler')
 const requestContext = require('./middleware/requestContext')
@@ -35,6 +36,7 @@ app.use(cookieParser())
 app.use(requestContext)
 app.use(requestLogger(env))
 
+app.use('/uploads', uploadRoutes)
 app.use('/api', apiRoutes)
 
 app.use(notFoundHandler)

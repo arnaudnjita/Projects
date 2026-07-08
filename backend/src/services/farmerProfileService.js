@@ -1,6 +1,7 @@
 const { withTransaction } = require('../config/database')
 const { AppError, NotFoundError } = require('../errors/AppError')
 const farmerProfileRepository = require('../repositories/farmerProfileRepository')
+const imageStorageService = require('./imageStorageService')
 const userRepository = require('../repositories/userRepository')
 const { normalizePhoneNumber } = require('../utils/phone')
 
@@ -136,10 +137,7 @@ async function updateMyFarmerProfile(userId, input) {
           input.produceSpecialty === undefined
             ? currentProfile.produce_specialty
             : nullableTrimmed(input.produceSpecialty),
-        profilePhotoUrl:
-          input.profilePhotoUrl === undefined
-            ? currentProfile.profile_photo_url
-            : validateInternalProfilePhotoUrl(input.profilePhotoUrl),
+        profilePhotoUrl: currentProfile.profile_photo_url,
         whatsappPhone: nextWhatsappPhone,
       },
       connection,
@@ -149,8 +147,58 @@ async function updateMyFarmerProfile(userId, input) {
   })
 }
 
+async function updateMyProfilePhoto(userId, uploadResult) {
+  let previousPhotoUrl = null
+
+  try {
+    const updatedProfile = await withTransaction(async (connection) => {
+      const currentProfile = await farmerProfileRepository.findProfileByUserId(userId, connection)
+
+      if (!currentProfile) {
+        throw new NotFoundError('Farmer profile was not found.')
+      }
+
+      previousPhotoUrl = currentProfile.profile_photo_url
+
+      await farmerProfileRepository.updateUserProfileFields(
+        userId,
+        {
+          accountLocation: currentProfile.account_location,
+          name: currentProfile.name,
+          phone: currentProfile.phone,
+        },
+        connection,
+      )
+
+      await farmerProfileRepository.updateFarmerProfileFields(
+        userId,
+        {
+          bio: currentProfile.bio,
+          farmLocation: currentProfile.farm_location,
+          produceSpecialty: currentProfile.produce_specialty,
+          profilePhotoUrl: uploadResult.publicUrl,
+          whatsappPhone: currentProfile.whatsapp_phone,
+        },
+        connection,
+      )
+
+      return toFarmerProfileResponse(await farmerProfileRepository.findProfileByUserId(userId, connection))
+    })
+
+    if (previousPhotoUrl && previousPhotoUrl !== uploadResult.publicUrl) {
+      await imageStorageService.deleteStoredFileByPublicUrl(previousPhotoUrl)
+    }
+
+    return updatedProfile
+  } catch (error) {
+    await imageStorageService.deleteStoredFiles(uploadResult)
+    throw error
+  }
+}
+
 module.exports = {
   getMyFarmerProfile,
+  updateMyProfilePhoto,
   updateMyFarmerProfile,
   validateInternalProfilePhotoUrl,
 }

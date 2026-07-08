@@ -8,7 +8,6 @@ const allowedProfileFields = new Set([
   'name',
   'phone',
   'produceSpecialty',
-  'profilePhotoUrl',
   'whatsappPhone',
 ])
 
@@ -57,11 +56,6 @@ const updateFarmerProfileValidator = [
   body('bio').optional({ nullable: true }).trim().isLength({ max: 1000 }).withMessage('Bio is too long.'),
   body('phone').optional().trim().notEmpty().withMessage('Phone cannot be empty.'),
   body('whatsappPhone').optional({ nullable: true }).trim(),
-  body('profilePhotoUrl')
-    .optional({ nullable: true })
-    .trim()
-    .isLength({ max: 500 })
-    .withMessage('Profile photo URL is too long.'),
 ]
 
 module.exports = {

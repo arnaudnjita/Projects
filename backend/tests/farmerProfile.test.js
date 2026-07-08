@@ -87,7 +87,6 @@ describe('farmer profile backend', () => {
         name: 'Updated Farm Name',
         phone: '6 11 22 33 44',
         produceSpecialty: 'Vegetables',
-        profilePhotoUrl: '/uploads/profile-photos/farmer-test.webp',
         whatsappPhone: '6 55 66 77 88',
       })
       .expect(200)
@@ -99,7 +98,6 @@ describe('farmer profile backend', () => {
       name: 'Updated Farm Name',
       phone: '+237611223344',
       produceSpecialty: 'Vegetables',
-      profilePhotoUrl: '/uploads/profile-photos/farmer-test.webp',
       whatsappPhone: '+237655667788',
     })
   })
@@ -131,7 +129,7 @@ describe('farmer profile backend', () => {
     })
   })
 
-  it('rejects unsupported fields, invalid phones, and unsafe profile photo URLs', async () => {
+  it('rejects unsupported fields and invalid phones', async () => {
     const farmer = await registerUser('farmer')
 
     const unsupported = await request(app)
@@ -154,14 +152,5 @@ describe('farmer profile backend', () => {
       message: 'Enter a valid WhatsApp phone number.',
     })
 
-    const unsafePhoto = await request(app)
-      .put('/api/farmers/me/profile')
-      .set('Cookie', farmer.cookie)
-      .send({ profilePhotoUrl: 'https://example.com/photo.png' })
-      .expect(422)
-    expect(unsafePhoto.body.error.fields).toContainEqual({
-      field: 'profilePhotoUrl',
-      message: 'Profile photo URL must be an internal uploaded image path.',
-    })
   })
 })

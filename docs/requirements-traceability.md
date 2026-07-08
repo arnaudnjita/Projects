@@ -1,6 +1,6 @@
 # Requirements Traceability Plan
 
-All requirements are planned only. Nothing is marked as implemented at this documentation milestone.
+Statuses reflect current backend and frontend progress. Backend-only milestones are marked separately from frontend work that remains planned.
 
 ## Functional Requirements
 
@@ -14,23 +14,23 @@ All requirements are planned only. Nothing is marked as implemented at this docu
 | FR-06 | Secure password hashing and JWT authentication | Auth context/provider | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` | `users` | Hash verification, JWT cookie, auth middleware tests | Planned |
 | FR-07 | Password reset through email reset link | `ForgotPasswordPage`, `ResetPasswordPage` | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password` | `users`, `password_reset_tokens` | Generic response, hashed token storage, valid reset, expired/used/invalid token, password mismatch, new password login tests | Backend implemented; frontend pages still planned |
 | FR-08 | Role-based protection of farmer routes | `RequireFarmerRoute` | All farmer-only endpoints, including `GET /api/farmers/me/profile` and `PUT /api/farmers/me/profile` | `users`, `farmer_profiles` | Auth middleware role tests; buyer receives 403 on farmer profile routes | Backend implemented |
-| FR-09 | Farmer profile create/edit | `FarmerProfilePage`, `FarmerProfileForm` | `GET /api/farmer/profile`, `PUT /api/farmer/profile` | `farmer_profiles`, `users` | Ownership and validation tests | Planned |
-| FR-10 | Product listing creation | `ProductCreatePage`, `ProductForm`, `ImageUploader` | `POST /api/farmer/products` | `products`, `product_images` | Multipart validation, transaction tests | Planned |
-| FR-11 | Product listing edit | `ProductEditPage`, `ProductForm` | `PUT /api/farmer/products/:id` | `products`, `product_images` | Ownership, validation, image update tests | Planned |
-| FR-12 | Product listing delete | `DashboardProductActions`, confirmation dialog | `DELETE /api/farmer/products/:id` | `products`, `product_images` | Ownership, transaction, image cleanup tests | Planned |
-| FR-13 | Quantity update | `QuantityUpdateControl` | `PATCH /api/farmer/products/:id/quantity` | `products` | Ownership and numeric validation tests | Planned |
-| FR-14 | Sold-out status | `StatusToggle` | `PATCH /api/farmer/products/:id/status` | `products` | Allowed status transition tests | Planned |
-| FR-15 | Inactive status | `StatusToggle` | `PATCH /api/farmer/products/:id/status` | `products` | Dashboard visibility and marketplace exclusion tests | Planned |
-| FR-16 | At least one product photo and multiple photos | `ImageUploader`, product gallery | `POST /api/farmer/products`, `PUT /api/farmer/products/:id` | `product_images` | Required image and max image tests | Planned |
-| FR-17 | Farmer dashboard with active, sold-out, and inactive listings | `FarmerDashboardPage`, `ListingTabs` | `GET /api/farmer/products?status=...`, `GET /api/farmer/dashboard-summary` | `products`, `product_images` | Status filtering and count tests | Planned |
-| FR-18 | Public marketplace accessible without login | `MarketplacePage`, `ProductGrid` | `GET /api/products` | `products`, `product_images`, `farmer_profiles`, `users` | Public access and safe fields tests | Planned |
-| FR-19 | Keyword search | `SearchInput` | `GET /api/products?search=...` | `products`, `farmer_profiles` | Parameterized keyword search tests | Planned |
-| FR-20 | Category, location, min-price, and max-price filters | `FilterPanel` | `GET /api/products?category=&location=&minPrice=&maxPrice=` | `products`, `farmer_profiles` | Query validation and SQL filter tests | Planned |
-| FR-21 | Sort by price or date added | `SortSelect` | `GET /api/products?sort=price_asc\|price_desc\|newest\|oldest` | `products` | Whitelisted sort tests | Planned |
-| FR-22 | Product detail page | `ProductDetailPage`, `ProductGallery` | `GET /api/products/:id` | `products`, `product_images`, `farmer_profiles`, `users` | Public detail and not-found tests | Planned |
-| FR-23 | Recently added section | `RecentlyAddedSection` | `GET /api/products/recent` | `products`, `product_images` | Limit and newest ordering tests | Planned |
-| FR-24 | Product comparison for guests and buyers | `ComparePage`, `CompareButton`, `CompareTray` | `GET /api/products/compare?ids=1,2,3,4` | `products`, `product_images`, `farmer_profiles` | LocalStorage max-four UI tests, API id validation | Planned |
-| FR-25 | WhatsApp contact link, tappable phone fallback, and contact-click logging | `ContactFarmerButton`, `PhoneFallback` | `POST /api/products/:id/contact-clicks` | `contact_clicks`, `products`, `users` | Optional-auth logging, nullable buyer ID, URL formatting tests | Planned |
+| FR-09 | Farmer profile create/edit | `FarmerProfilePage`, `FarmerProfileForm` | `GET /api/farmers/me/profile`, `PUT /api/farmers/me/profile`, `POST /api/farmers/me/profile/photo` | `farmer_profiles`, `users` | Farmer-only profile read/update, buyer 403, photo upload tests | Backend implemented |
+| FR-10 | Product listing creation | `ProductCreatePage`, `ProductForm`, `ImageUploader` | `POST /api/farmer/products` | `products`, `product_images` | Product creation with one/multiple images, no-image rejection, invalid category tests | Backend implemented |
+| FR-11 | Product listing edit | `ProductEditPage`, `ProductForm` | `PUT /api/farmer/products/:productId` | `products`, `product_images` | Ownership, field edit, add/remove image, image cleanup tests | Backend implemented |
+| FR-12 | Product listing delete | `DashboardProductActions`, confirmation dialog | `DELETE /api/farmer/products/:productId` | `products`, `product_images` | Ownership, delete, 404 after delete, image cleanup tests | Backend implemented |
+| FR-13 | Quantity update | `QuantityUpdateControl` | `PATCH /api/farmer/products/:productId/quantity` | `products` | Quantity-to-zero sold_out and inactive-preserving quantity increase tests | Backend implemented |
+| FR-14 | Sold-out status | `StatusToggle`, `ProductDetailPage` | `PATCH /api/farmer/products/:id/status`, `PATCH /api/farmer/products/:id/quantity`, `GET /api/products/:id` | `products` | Quantity-to-zero sold_out tests; sold-out public detail visibility tests | Backend implemented |
+| FR-15 | Inactive status | `StatusToggle`, `MarketplacePage` | `PATCH /api/farmer/products/:id/status`, `GET /api/products`, `GET /api/products/:id` | `products` | Inactive status update and public 404/exclusion tests | Backend implemented |
+| FR-16 | At least one product photo and multiple photos | `ImageUploader`, product gallery | `POST /api/farmer/products`, `PUT /api/farmer/products/:id`, `GET /api/products/:id` | `product_images` | Required image, multiple image, gallery, thumbnail, and cleanup tests | Backend implemented |
+| FR-17 | Farmer dashboard with active, sold-out, and inactive listings | `FarmerDashboardPage`, `ListingTabs` | `GET /api/farmer/products?status=...` | `products`, `product_images` | Status filtering and dashboard count tests | Backend implemented |
+| FR-18 | Public marketplace accessible without login | `MarketplacePage`, `ProductGrid` | `GET /api/products` | `products`, `product_images`, `farmer_profiles`, `users` | Public access and safe fields tests | Backend implemented |
+| FR-19 | Keyword search | `SearchInput` | `GET /api/products?search=...` | `products`, `farmer_profiles` | Parameterized keyword search and injection-like input tests | Backend implemented |
+| FR-20 | Category, location, min-price, and max-price filters | `FilterPanel` | `GET /api/products?category=&location=&minPrice=&maxPrice=` | `products`, `farmer_profiles`, `users` | Individual and combined filter tests, invalid range tests | Backend implemented |
+| FR-21 | Sort by price or date added | `SortSelect` | `GET /api/products?sort=price_asc\|price_desc\|newest\|oldest` | `products` | Whitelisted sort tests and invalid sort rejection | Backend implemented |
+| FR-22 | Product detail page | `ProductDetailPage`, `ProductGallery` | `GET /api/products/:id` | `products`, `product_images`, `farmer_profiles`, `users` | Public detail, ordered gallery, sold-out visible, inactive 404 tests | Backend implemented |
+| FR-23 | Recently added section | `RecentlyAddedSection` | `GET /api/products/recent` | `products`, `product_images` | Limit and newest active listing tests | Backend implemented |
+| FR-24 | Product comparison for guests and buyers | `ComparePage`, `CompareButton`, `CompareTray` | `GET /api/products/compare?ids=1,2,3,4` | `products`, `product_images`, `farmer_profiles`, `users` | API id validation, requested ordering, active-only comparison tests; localStorage UI still planned | Backend implemented; frontend comparison storage planned |
+| FR-25 | WhatsApp contact link, tappable phone fallback, and contact-click logging | `ContactFarmerButton`, `PhoneFallback` | `GET /api/products/:id`, planned `POST /api/products/:id/contact-clicks` | `contact_click_logs`, `products`, `users` | Public detail safe phone/WhatsApp field exposure tests; optional-auth contact logging still planned | Partially implemented: safe public contact fields only |
 
 ## Non-Functional Requirements
 

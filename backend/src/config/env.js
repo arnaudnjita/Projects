@@ -109,6 +109,7 @@ function buildEnv(source = process.env) {
     nodeEnv,
     allowDevResetTokenLogging: readBoolean(source, 'ALLOW_DEV_RESET_TOKEN_LOGGING', false),
     port,
+    uploadRoot: String(source.UPLOAD_ROOT || 'uploads').trim(),
     smtp: {
       from: readRequiredString(source, 'SMTP_FROM', errors),
       host: readRequiredString(source, 'SMTP_HOST', errors),

@@ -103,3 +103,30 @@ Remove-Item Env:\ALLOW_DB_RESET
 ```
 
 `db:reset` is guarded and refuses to run in production or without `ALLOW_DB_RESET=true`.
+
+## Local Upload Storage
+
+Development and persistent-server uploads are stored under:
+
+```text
+backend/uploads/
+```
+
+Runtime upload files are ignored by Git. Profile images are uploaded through:
+
+```text
+POST /api/farmers/me/profile/photo
+```
+
+The request must be authenticated as a farmer and use multipart form data with an `image` field. Accepted image types are JPEG, PNG, and WebP. The backend validates both MIME type and Sharp image decoding, converts accepted files to WebP, and writes a thumbnail next to the main image.
+
+Product image support uses the same storage service through farmer product create/update endpoints. The maximum is five product images per product.
+
+## Product Status Rules
+
+Farmer product creation and updates use these backend rules:
+
+- Creating a product with `quantityAvailable=0` stores the product as `sold_out`.
+- Setting quantity to zero later also marks the product `sold_out`.
+- Increasing quantity above zero does not automatically reactivate a product that is `inactive`; the farmer must explicitly change status.
+- A product cannot be set to `active` while quantity is zero.

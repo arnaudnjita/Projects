@@ -24,9 +24,20 @@ async function compareProducts(req, res) {
   })
 }
 
+async function recordContactClick(req, res) {
+  return sendSuccess(
+    res,
+    {
+      contactClick: await publicProductService.recordContactClick(Number(req.params.productId), req.user),
+    },
+    { statusCode: 201 },
+  )
+}
+
 module.exports = {
   compareProducts,
   getProductDetail,
   listProducts,
   listRecentProducts,
+  recordContactClick,
 }

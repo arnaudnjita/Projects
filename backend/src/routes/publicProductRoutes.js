@@ -1,6 +1,8 @@
 const express = require('express')
 const { param } = require('express-validator')
 const publicProductController = require('../controllers/publicProductController')
+const { optionalAuth } = require('../middleware/authMiddleware')
+const { contactClickRateLimiter } = require('../middleware/rateLimiters')
 const asyncHandler = require('../utils/asyncHandler')
 const { throwIfValidationFailed } = require('../utils/validation')
 
@@ -18,6 +20,14 @@ function validateRequest(req, _res, next) {
 router.get('/', asyncHandler(publicProductController.listProducts))
 router.get('/recent', asyncHandler(publicProductController.listRecentProducts))
 router.get('/compare', asyncHandler(publicProductController.compareProducts))
+router.post(
+  '/:productId/contact-click',
+  contactClickRateLimiter,
+  optionalAuth,
+  param('productId').isInt({ min: 1 }).withMessage('Product ID must be valid.'),
+  validateRequest,
+  asyncHandler(publicProductController.recordContactClick),
+)
 router.get(
   '/:productId',
   param('productId').isInt({ min: 1 }).withMessage('Product ID must be valid.'),

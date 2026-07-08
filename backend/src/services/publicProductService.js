@@ -2,6 +2,7 @@ const { AppError, NotFoundError } = require('../errors/AppError')
 const publicProductRepository = require('../repositories/publicProductRepository')
 const { parsePagination } = require('../utils/pagination')
 const { parseAllowedSort } = require('../utils/sort')
+const { mapWhatsAppContactFields } = require('../utils/whatsapp')
 
 const sortAllowList = {
   newest: 'p.created_at DESC',
@@ -60,6 +61,8 @@ function groupImages(images) {
 }
 
 function mapFarmer(product) {
+  const contact = mapWhatsAppContactFields(product)
+
   return {
     accountLocation: product.farmer_account_location,
     farmLocation: product.farm_location || product.farmer_account_location,
@@ -68,7 +71,9 @@ function mapFarmer(product) {
     phone: product.farmer_phone,
     profilePhotoUrl: product.profile_photo_url,
     specialty: product.produce_specialty,
-    whatsappPhone: product.whatsapp_phone || product.farmer_phone,
+    whatsappDigits: contact.whatsappDigits,
+    whatsappMessage: contact.messageTemplate,
+    whatsappPhone: contact.phone,
   }
 }
 
@@ -221,9 +226,26 @@ async function compareProducts(idsValue) {
   return ids.map((id) => mapCardProduct(byId.get(id), imagesByProduct.get(id) || []))
 }
 
+async function recordContactClick(productId, user = null) {
+  const product = await publicProductRepository.findContactableProductById(productId)
+
+  if (!product) {
+    throw new NotFoundError('Product was not found.')
+  }
+
+  const buyerUserId = user?.role === 'buyer' ? user.userId : null
+  const contactClickLogId = await publicProductRepository.createContactClickLog(productId, buyerUserId)
+
+  return {
+    contactClickLogId,
+    logged: true,
+  }
+}
+
 module.exports = {
   compareProducts,
   getPublicProductDetail,
   listPublicProducts,
   listRecentProducts,
+  recordContactClick,
 }

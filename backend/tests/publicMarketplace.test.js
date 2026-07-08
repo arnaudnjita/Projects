@@ -85,6 +85,26 @@ async function registerFarmer(location = 'Buea Town') {
   }
 }
 
+async function registerBuyer(location = 'Buea Town') {
+  const response = await request(app)
+    .post('/api/auth/register')
+    .send({
+      email: uniqueEmail('buyer'),
+      location,
+      name: `${location} Buyer`,
+      password: 'Password1',
+      passwordConfirmation: 'Password1',
+      phone: uniqueCameroonPhone(),
+      role: 'buyer',
+    })
+    .expect(201)
+
+  return {
+    cookie: extractCookie(response),
+    user: response.body.data.user,
+  }
+}
+
 function attachProductFields(testRequest, fields) {
   for (const [key, value] of Object.entries(fields)) {
     testRequest.field(key, String(value))
@@ -113,6 +133,29 @@ async function createProduct(cookie, overrides = {}, imageCount = 1) {
   }
 
   return requestBuilder.expect(201)
+}
+
+async function getContactClickLogs(productId) {
+  const [rows] = await pool.execute(
+    `SELECT contact_click_log_id, product_id, buyer_user_id, clicked_at
+     FROM contact_click_logs
+     WHERE product_id = ?
+     ORDER BY contact_click_log_id ASC`,
+    [productId],
+  )
+
+  return rows
+}
+
+async function tableExists(tableName) {
+  const [rows] = await pool.execute(
+    `SELECT TABLE_NAME
+     FROM INFORMATION_SCHEMA.TABLES
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?`,
+    [tableName],
+  )
+
+  return rows.length > 0
 }
 
 describe('public marketplace product browsing and comparison', () => {
@@ -268,5 +311,102 @@ describe('public marketplace product browsing and comparison', () => {
     await request(app).get(`/api/products/compare?ids=${firstId},${firstId}`).expect(422)
     await request(app).get('/api/products/compare?ids=abc,2').expect(422)
     await request(app).get(`/api/products/compare?ids=${firstId},${inactiveId}`).expect(404)
+  })
+
+  it('logs guest contact clicks with a null buyer ID', async () => {
+    const farmer = await registerFarmer('Likoko')
+    const created = await createProduct(farmer.cookie, { name: 'Guest Contact Tomato' })
+    const productId = created.body.data.product.productId
+
+    const response = await request(app)
+      .post(`/api/products/${productId}/contact-click`)
+      .set('x-test-rate-limit-key', 'guest-contact')
+      .expect(201)
+
+    expect(response.body.data.contactClick).toMatchObject({ logged: true })
+
+    const logs = await getContactClickLogs(productId)
+    expect(logs).toHaveLength(1)
+    expect(logs[0].buyer_user_id).toBeNull()
+  })
+
+  it('logs a buyer contact click with the buyer ID and treats farmers as guests', async () => {
+    const farmer = await registerFarmer('Mile 16')
+    const buyer = await registerBuyer('Clerks Quarter')
+    const created = await createProduct(farmer.cookie, { name: 'Buyer Contact Yam' })
+    const productId = created.body.data.product.productId
+
+    await request(app)
+      .post(`/api/products/${productId}/contact-click`)
+      .set('Cookie', buyer.cookie)
+      .set('x-test-rate-limit-key', 'buyer-contact')
+      .expect(201)
+
+    await request(app)
+      .post(`/api/products/${productId}/contact-click`)
+      .set('Cookie', farmer.cookie)
+      .set('x-test-rate-limit-key', 'farmer-contact')
+      .expect(201)
+
+    const logs = await getContactClickLogs(productId)
+    expect(Number(logs[0].buyer_user_id)).toBe(buyer.user.userId)
+    expect(logs[1].buyer_user_id).toBeNull()
+  })
+
+  it('treats an invalid optional-auth JWT as a guest contact click', async () => {
+    const farmer = await registerFarmer('Sandpit')
+    const created = await createProduct(farmer.cookie, { name: 'Invalid Token Contact Pepper' })
+    const productId = created.body.data.product.productId
+
+    await request(app)
+      .post(`/api/products/${productId}/contact-click`)
+      .set('Cookie', `${env.cookie.name}=not-a-valid-token`)
+      .set('x-test-rate-limit-key', 'invalid-token-contact')
+      .expect(201)
+
+    const logs = await getContactClickLogs(productId)
+    expect(logs).toHaveLength(1)
+    expect(logs[0].buyer_user_id).toBeNull()
+  })
+
+  it('rejects contact clicks for missing or inactive products', async () => {
+    const farmer = await registerFarmer('Wotutu')
+    const inactive = await createProduct(farmer.cookie, { name: 'Inactive Contact Beans' })
+
+    await request(app)
+      .patch(`/api/farmer/products/${inactive.body.data.product.productId}/status`)
+      .set('Cookie', farmer.cookie)
+      .send({ status: 'inactive' })
+      .expect(200)
+
+    await request(app)
+      .post('/api/products/999999999/contact-click')
+      .set('x-test-rate-limit-key', 'missing-contact')
+      .expect(404)
+
+    await request(app)
+      .post(`/api/products/${inactive.body.data.product.productId}/contact-click`)
+      .set('x-test-rate-limit-key', 'inactive-contact')
+      .expect(404)
+  })
+
+  it('rate limits repeated contact clicks without creating order or message tables', async () => {
+    const farmer = await registerFarmer('Upper Farms')
+    const created = await createProduct(farmer.cookie, { name: 'Rate Limited Plantain' })
+    const productId = created.body.data.product.productId
+    const key = `rate-limit-${productId}`
+
+    await request(app).post(`/api/products/${productId}/contact-click`).set('x-test-rate-limit-key', key).expect(201)
+    await request(app).post(`/api/products/${productId}/contact-click`).set('x-test-rate-limit-key', key).expect(201)
+    await request(app).post(`/api/products/${productId}/contact-click`).set('x-test-rate-limit-key', key).expect(201)
+
+    const limited = await request(app)
+      .post(`/api/products/${productId}/contact-click`)
+      .set('x-test-rate-limit-key', key)
+      .expect(429)
+
+    expect(limited.body.error.code).toBe('RATE_LIMITED')
+    expect(await tableExists('orders')).toBe(false)
+    expect(await tableExists('messages')).toBe(false)
   })
 })

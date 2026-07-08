@@ -105,6 +105,27 @@ async function findPublicProductById(productId, connection = pool) {
   return rows[0] || null
 }
 
+async function findContactableProductById(productId, connection = pool) {
+  const [rows] = await connection.execute(
+    `${publicProductSelect()}
+     WHERE p.product_id = ? AND p.status = 'active'
+     LIMIT 1`,
+    [productId],
+  )
+
+  return rows[0] || null
+}
+
+async function createContactClickLog(productId, buyerUserId, connection = pool) {
+  const [result] = await connection.execute(
+    `INSERT INTO contact_click_logs (product_id, buyer_user_id)
+     VALUES (?, ?)`,
+    [productId, buyerUserId],
+  )
+
+  return result.insertId
+}
+
 async function listActiveProductsByIds(productIds, connection = pool) {
   if (productIds.length === 0) {
     return []
@@ -138,6 +159,8 @@ async function listImagesForProducts(productIds, connection = pool) {
 }
 
 module.exports = {
+  createContactClickLog,
+  findContactableProductById,
   findPublicProductById,
   listActiveProductsByIds,
   listImagesForProducts,

@@ -12,6 +12,7 @@ describe('GET /api/health', () => {
     const response = await request(app).get('/api/health').expect(200)
 
     expect(response.body).toEqual({
+      success: true,
       data: {
         application: 'CultivaX',
         database: 'ok',
@@ -33,5 +34,6 @@ describe('GET /api/health', () => {
       database: 'unavailable',
       status: 'degraded',
     })
+    expect(response.body.success).toBe(true)
   })
 })

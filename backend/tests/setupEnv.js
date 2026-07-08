@@ -1,4 +1,6 @@
-process.env.NODE_ENV = process.env.NODE_ENV || 'test'
+require('dotenv').config()
+
+process.env.NODE_ENV = 'test'
 process.env.PORT = process.env.PORT || '5000'
 process.env.FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 process.env.DB_HOST = process.env.DB_HOST || '127.0.0.1'
@@ -16,3 +18,4 @@ process.env.SMTP_PASS = process.env.SMTP_PASS || 'smtp_pass'
 process.env.SMTP_FROM = process.env.SMTP_FROM || 'CultivaX <test@example.com>'
 process.env.APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:5173'
 process.env.MAX_UPLOAD_MB = process.env.MAX_UPLOAD_MB || '5'
+process.env.ALLOW_DEV_RESET_TOKEN_LOGGING = 'false'

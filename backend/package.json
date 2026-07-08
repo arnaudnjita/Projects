@@ -5,6 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
+    "db:reset": "node scripts/run-schema.js --reset",
+    "db:schema": "node scripts/run-schema.js",
+    "db:seed": "node scripts/run-seed.js",
     "start": "node src/server.js",
     "test": "vitest run",
     "test:watch": "vitest",

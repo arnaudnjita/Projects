@@ -6,13 +6,13 @@ All requirements are planned only. Nothing is marked as implemented at this docu
 
 | ID | Requirement | Planned frontend page/component | Planned API endpoint | Planned database table(s) | Planned test coverage | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| FR-01 | Farmer registration | `RegisterPage`, `RoleSelect`, `RegisterForm` | `POST /api/auth/register` | `users` | Backend validation, duplicate checks, frontend form validation | Planned |
-| FR-02 | Buyer registration | `RegisterPage`, `RoleSelect`, `RegisterForm` | `POST /api/auth/register` | `users` | Backend validation, duplicate checks, frontend form validation | Planned |
-| FR-03 | Login with phone or email and password | `LoginPage`, `LoginForm` | `POST /api/auth/login` | `users` | Credential tests, cookie issuance, frontend error state | Planned |
-| FR-04 | Unique phone and email validation | `RegisterForm`, `ProfileForm` | `POST /api/auth/register`, `PUT /api/farmer/profile` | `users` | Unique constraint and service tests | Planned |
-| FR-05 | Cameroon/international phone validation and E.164 normalization | `RegisterForm`, `ProfileForm` | `POST /api/auth/register`, `PUT /api/farmer/profile` | `users`, `farmer_profiles` | Phone parsing unit tests | Planned |
+| FR-01 | Farmer registration | `RegisterPage`, `RoleSelect`, `RegisterForm` | `POST /api/auth/register` | `users`, `farmer_profiles` | Farmer registration creates user and profile; duplicate and validation tests | Backend implemented |
+| FR-02 | Buyer registration | `RegisterPage`, `RoleSelect`, `RegisterForm` | `POST /api/auth/register` | `users` | Buyer registration creates no farmer profile; validation tests | Backend implemented |
+| FR-03 | Login with phone or email and password | `LoginPage`, `LoginForm` | `POST /api/auth/login` | `users` | Login by email, login by phone, wrong password, JWT cookie tests | Backend implemented |
+| FR-04 | Unique phone and email validation | `RegisterForm`, `ProfileForm` | `POST /api/auth/register`, `PUT /api/farmer/profile` | `users` | Duplicate phone and duplicate email field-error tests | Partially implemented: registration backend only |
+| FR-05 | Cameroon/international phone validation and E.164 normalization | `RegisterForm`, `ProfileForm` | `POST /api/auth/register`, `PUT /api/farmer/profile` | `users`, `farmer_profiles` | Invalid phone registration and phone utility tests | Partially implemented: auth backend only |
 | FR-06 | Secure password hashing and JWT authentication | Auth context/provider | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` | `users` | Hash verification, JWT cookie, auth middleware tests | Planned |
-| FR-07 | Password reset through email reset link | `ForgotPasswordPage`, `ResetPasswordPage` | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password` | `users`, `password_reset_tokens` | Token expiry, single-use token, no account enumeration | Planned |
+| FR-07 | Password reset through email reset link | `ForgotPasswordPage`, `ResetPasswordPage` | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password` | `users`, `password_reset_tokens` | Generic response, hashed token storage, valid reset, expired/used/invalid token, password mismatch, new password login tests | Backend implemented; frontend pages still planned |
 | FR-08 | Role-based protection of farmer routes | `RequireFarmerRoute` | All `/api/farmer/*` endpoints | `users` | Auth middleware role tests, route guard tests | Planned |
 | FR-09 | Farmer profile create/edit | `FarmerProfilePage`, `FarmerProfileForm` | `GET /api/farmer/profile`, `PUT /api/farmer/profile` | `farmer_profiles`, `users` | Ownership and validation tests | Planned |
 | FR-10 | Product listing creation | `ProductCreatePage`, `ProductForm`, `ImageUploader` | `POST /api/farmer/products` | `products`, `product_images` | Multipart validation, transaction tests | Planned |

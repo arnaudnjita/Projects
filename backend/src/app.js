@@ -2,50 +2,42 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const express = require('express')
 const helmet = require('helmet')
-const rateLimit = require('express-rate-limit')
 
 const env = require('./config/env')
-const healthRoutes = require('./routes/healthRoutes')
+const apiRoutes = require('./routes/apiRoutes')
+const errorHandler = require('./middleware/errorHandler')
+const notFoundHandler = require('./middleware/notFoundHandler')
+const requestContext = require('./middleware/requestContext')
+const requestLogger = require('./middleware/requestLogger')
+const { globalRateLimiter } = require('./middleware/rateLimiters')
 
 const app = express()
+const allowedOrigins = new Set([env.frontendUrl])
 
 app.use(helmet())
 app.use(
   cors({
     credentials: true,
-    origin: env.frontendUrl,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true)
+        return
+      }
+
+      callback(null, false)
+    },
   }),
 )
-app.use(
-  rateLimit({
-    legacyHeaders: false,
-    limit: 100,
-    standardHeaders: true,
-    windowMs: 15 * 60 * 1000,
-  }),
-)
-app.use(express.json())
+app.use(globalRateLimiter)
+app.use(express.json({ limit: '1mb' }))
+app.use(express.urlencoded({ extended: false, limit: '1mb' }))
 app.use(cookieParser())
+app.use(requestContext)
+app.use(requestLogger(env))
 
-app.use('/api', healthRoutes)
+app.use('/api', apiRoutes)
 
-app.use((_req, res) => {
-  res.status(404).json({
-    error: {
-      code: 'NOT_FOUND',
-      message: 'The requested resource was not found.',
-    },
-  })
-})
-
-app.use((err, _req, res, _next) => {
-  console.error(err)
-  res.status(500).json({
-    error: {
-      code: 'INTERNAL_ERROR',
-      message: 'Something went wrong.',
-    },
-  })
-})
+app.use(notFoundHandler)
+app.use(errorHandler(env))
 
 module.exports = app

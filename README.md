@@ -84,3 +84,22 @@ cd C:\Projects\backend
 npm run lint
 npm test
 ```
+
+Database:
+
+```powershell
+cd C:\Projects\backend
+npm run db:schema
+npm run db:seed
+```
+
+To intentionally reset all MVP tables in a non-production local database:
+
+```powershell
+cd C:\Projects\backend
+$env:ALLOW_DB_RESET = "true"
+npm run db:reset
+Remove-Item Env:\ALLOW_DB_RESET
+```
+
+`db:reset` is guarded and refuses to run in production or without `ALLOW_DB_RESET=true`.

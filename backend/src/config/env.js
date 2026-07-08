@@ -107,6 +107,7 @@ function buildEnv(source = process.env) {
     },
     maxUploadMb,
     nodeEnv,
+    allowDevResetTokenLogging: readBoolean(source, 'ALLOW_DEV_RESET_TOKEN_LOGGING', false),
     port,
     smtp: {
       from: readRequiredString(source, 'SMTP_FROM', errors),

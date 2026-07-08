@@ -8,5 +8,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*-smoke.out.log
+*-smoke.err.log
 uploads/
 backend/uploads/

@@ -48,12 +48,13 @@ describe('backend foundation', () => {
     expect(response.headers['access-control-allow-credentials']).toBe('true')
   })
 
-  it('does not allow unconfigured origins', async () => {
+  it('rejects unconfigured origins', async () => {
     const response = await request(app)
       .get('/api')
       .set('Origin', 'http://example.test')
-      .expect(200)
+      .expect(403)
 
     expect(response.headers['access-control-allow-origin']).toBeUndefined()
+    expect(response.body.error.code).toBe('ORIGIN_NOT_ALLOWED')
   })
 })

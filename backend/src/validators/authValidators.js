@@ -1,8 +1,10 @@
 const { body } = require('express-validator')
+const { rejectUnsupportedFields } = require('./bodyFields')
 
 const passwordMessage = 'Password must be at least 8 characters and include a letter and a number.'
 
 const registerValidator = [
+  rejectUnsupportedFields(['email', 'location', 'name', 'password', 'passwordConfirmation', 'phone', 'role']),
   body('name').trim().notEmpty().withMessage('Name is required.').isLength({ max: 120 }).withMessage('Name is too long.'),
   body('phone').trim().notEmpty().withMessage('Phone is required.'),
   body('email')
@@ -26,15 +28,18 @@ const registerValidator = [
 ]
 
 const loginValidator = [
+  rejectUnsupportedFields(['identifier', 'password']),
   body('identifier').trim().notEmpty().withMessage('Phone or email is required.'),
   body('password').isString().notEmpty().withMessage('Password is required.'),
 ]
 
 const forgotPasswordValidator = [
+  rejectUnsupportedFields(['email']),
   body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Enter a valid email address.'),
 ]
 
 const resetPasswordValidator = [
+  rejectUnsupportedFields(['password', 'passwordConfirmation', 'token']),
   body('token').trim().notEmpty().withMessage('Reset token is required.'),
   body('password').isString().matches(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/).withMessage(passwordMessage),
   body('passwordConfirmation')

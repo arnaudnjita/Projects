@@ -192,6 +192,30 @@ describe('category and farmer product management', () => {
       })
   })
 
+  it('rejects unsupported product fields', async () => {
+    const farmer = await registerUser('farmer')
+    const categoryId = await getCategoryId()
+    const requestBuilder = attachProductFields(request(app).post('/api/farmer/products').set('Cookie', farmer.cookie), {
+      categoryId,
+      internalFeatured: 'true',
+      name: 'Extra Field Product',
+      price: '100',
+      quantityAvailable: '1',
+      unit: 'kg',
+    })
+
+    requestBuilder.attach('images', await makeImageBuffer(), {
+      contentType: 'image/png',
+      filename: 'extra-field.png',
+    })
+
+    const response = await requestBuilder.expect(422)
+    expect(response.body.error.fields).toContainEqual({
+      field: 'internalFeatured',
+      message: 'This field is not supported.',
+    })
+  })
+
   it('enforces ownership and denies buyer access', async () => {
     const farmer = await registerUser('farmer')
     const otherFarmer = await registerUser('farmer')

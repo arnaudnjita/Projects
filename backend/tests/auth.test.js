@@ -105,6 +105,27 @@ describe('auth endpoints', () => {
     expect(Number(rows[0].count)).toBe(0)
   })
 
+  it('rejects unsupported registration fields', async () => {
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({
+        email: uniqueEmail('extra-field'),
+        isAdmin: true,
+        location: 'Molyko',
+        name: 'Extra Field',
+        password: 'Password1',
+        passwordConfirmation: 'Password1',
+        phone: uniqueCameroonPhone(),
+        role: 'buyer',
+      })
+      .expect(422)
+
+    expect(response.body.error.fields).toContainEqual({
+      field: 'isAdmin',
+      message: 'This field is not supported.',
+    })
+  })
+
   it('rejects duplicate phone numbers with a field error', async () => {
     const phone = uniqueCameroonPhone()
 

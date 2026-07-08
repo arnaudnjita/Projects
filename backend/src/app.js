@@ -8,8 +8,10 @@ const apiRoutes = require('./routes/apiRoutes')
 const uploadRoutes = require('./routes/uploadRoutes')
 const errorHandler = require('./middleware/errorHandler')
 const notFoundHandler = require('./middleware/notFoundHandler')
+const createOriginGuard = require('./middleware/originGuard')
 const requestContext = require('./middleware/requestContext')
 const requestLogger = require('./middleware/requestLogger')
+const csrfProtection = require('./middleware/csrfProtection')
 const { globalRateLimiter } = require('./middleware/rateLimiters')
 
 const app = express()
@@ -30,9 +32,11 @@ app.use(
   }),
 )
 app.use(globalRateLimiter)
+app.use(createOriginGuard(allowedOrigins))
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: false, limit: '1mb' }))
 app.use(cookieParser())
+app.use(csrfProtection)
 app.use(requestContext)
 app.use(requestLogger(env))
 

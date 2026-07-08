@@ -62,9 +62,14 @@ function PublicLayout() {
               </>
             )}
             {user?.role === 'farmer' ? (
-              <NavLink to="/farmer/dashboard" onClick={closeMenu}>
-                Farmer Dashboard
-              </NavLink>
+              <>
+                <NavLink to="/farmer/dashboard" onClick={closeMenu}>
+                  Farmer Dashboard
+                </NavLink>
+                <NavLink to="/farmer/profile" onClick={closeMenu}>
+                  Farmer Profile
+                </NavLink>
+              </>
             ) : null}
             {user ? (
               <Button className="site-nav__logout" isLoading={loggingOut} onClick={handleLogout} variant="ghost">

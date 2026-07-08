@@ -10,7 +10,7 @@ const validSource = {
   DB_USER: 'cultivax_user',
   FRONTEND_URL: 'http://localhost:5173',
   JWT_EXPIRES_IN: '7d',
-  JWT_SECRET: 'secret_jwt_value',
+  JWT_SECRET: 'secret_jwt_value_32_chars_minimum',
   MAX_UPLOAD_MB: '5',
   NODE_ENV: 'test',
   PORT: '5000',
@@ -53,5 +53,12 @@ describe('buildEnv', () => {
       expect(error.message).not.toContain(validSource.DB_PASSWORD)
       expect(error.message).not.toContain(validSource.JWT_SECRET)
     }
+  })
+
+  it('rejects weak or placeholder JWT secrets', () => {
+    expect(() => buildEnv({ ...validSource, JWT_SECRET: 'short-secret' })).toThrow(/JWT_SECRET must be at least 32 characters/)
+    expect(() => buildEnv({ ...validSource, JWT_SECRET: 'replace_with_a_long_random_secret' })).toThrow(
+      /JWT_SECRET must be changed from the example value/,
+    )
   })
 })

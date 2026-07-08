@@ -1,8 +1,11 @@
 const { body, param } = require('express-validator')
+const { rejectUnsupportedFields } = require('./bodyFields')
 
 const productIdParam = [param('productId').isInt({ min: 1 }).withMessage('Product ID must be valid.')]
+const productBaseFields = ['categoryId', 'description', 'name', 'price', 'quantityAvailable', 'status', 'unit']
 
 const productCreateValidator = [
+  rejectUnsupportedFields(productBaseFields),
   body('name').trim().notEmpty().withMessage('Name is required.').isLength({ max: 160 }).withMessage('Name is too long.'),
   body('categoryId').isInt({ min: 1 }).withMessage('Choose a valid category.'),
   body('description').optional({ nullable: true }).trim().isLength({ max: 2000 }).withMessage('Description is too long.'),
@@ -14,6 +17,7 @@ const productCreateValidator = [
 
 const productUpdateValidator = [
   ...productIdParam,
+  rejectUnsupportedFields([...productBaseFields, 'deleteImageIds', 'imageSortOrders']),
   body('name').optional().trim().notEmpty().withMessage('Name cannot be empty.').isLength({ max: 160 }).withMessage('Name is too long.'),
   body('categoryId').optional().isInt({ min: 1 }).withMessage('Choose a valid category.'),
   body('description').optional({ nullable: true }).trim().isLength({ max: 2000 }).withMessage('Description is too long.'),
@@ -25,11 +29,13 @@ const productUpdateValidator = [
 
 const quantityValidator = [
   ...productIdParam,
+  rejectUnsupportedFields(['quantityAvailable']),
   body('quantityAvailable').isFloat({ min: 0 }).withMessage('Quantity must be a valid non-negative number.'),
 ]
 
 const statusValidator = [
   ...productIdParam,
+  rejectUnsupportedFields(['status']),
   body('status').isIn(['active', 'sold_out', 'inactive']).withMessage('Status must be active, sold_out, or inactive.'),
 ]
 

@@ -75,6 +75,7 @@ function buildEnv(source = process.env) {
   const nodeEnv = readRequiredString(source, 'NODE_ENV', errors)
   const port = readRequiredNumber(source, 'PORT', errors, { min: 1, max: 65535 })
   const frontendUrl = readRequiredString(source, 'FRONTEND_URL', errors)
+  const jwtSecret = readRequiredString(source, 'JWT_SECRET', errors)
   const dbPort = readRequiredNumber(source, 'DB_PORT', errors, { min: 1, max: 65535 })
   const smtpPort = readRequiredNumber(source, 'SMTP_PORT', errors, { min: 1, max: 65535 })
   const maxUploadMb = readRequiredNumber(source, 'MAX_UPLOAD_MB', errors, {
@@ -84,6 +85,14 @@ function buildEnv(source = process.env) {
 
   if (errors.length > 0) {
     throw new Error(`Invalid backend configuration. ${errors.join('; ')}`)
+  }
+
+  if (jwtSecret.length < 32) {
+    throw new Error('Invalid backend configuration. JWT_SECRET must be at least 32 characters')
+  }
+
+  if (jwtSecret === 'replace_with_a_long_random_secret') {
+    throw new Error('Invalid backend configuration. JWT_SECRET must be changed from the example value')
   }
 
   return Object.freeze({
@@ -103,7 +112,7 @@ function buildEnv(source = process.env) {
     frontendUrl,
     jwt: {
       expiresIn: readRequiredString(source, 'JWT_EXPIRES_IN', errors),
-      secret: readRequiredString(source, 'JWT_SECRET', errors),
+      secret: jwtSecret,
     },
     maxUploadMb,
     nodeEnv,

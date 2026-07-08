@@ -7,6 +7,38 @@ const apiClient = axios.create({
   withCredentials: true,
 })
 
+let csrfToken = ''
+let csrfTokenPromise = null
+
+function isBrowserRuntime() {
+  return typeof window !== 'undefined'
+}
+
+function isUnsafeMethod(method = 'get') {
+  return ['post', 'put', 'patch', 'delete'].includes(method.toLowerCase())
+}
+
+async function getCsrfToken() {
+  if (csrfToken) {
+    return csrfToken
+  }
+
+  csrfTokenPromise ||= axios
+    .get(`${apiBaseUrl}/csrf`, {
+      timeout: 15_000,
+      withCredentials: true,
+    })
+    .then((response) => {
+      csrfToken = response.data?.data?.csrfToken || ''
+      return csrfToken
+    })
+    .finally(() => {
+      csrfTokenPromise = null
+    })
+
+  return csrfTokenPromise
+}
+
 export class ApiError extends Error {
   constructor(message, { code = 'API_ERROR', fields = undefined, status = 0 } = {}) {
     super(message)
@@ -47,9 +79,25 @@ function normalizeApiError(error) {
   })
 }
 
+apiClient.interceptors.request.use(async (config) => {
+  if (isBrowserRuntime() && isUnsafeMethod(config.method)) {
+    const token = await getCsrfToken()
+    config.headers = config.headers || {}
+    config.headers['X-CSRF-Token'] = token
+  }
+
+  return config
+})
+
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(normalizeApiError(error)),
+  (error) => {
+    if (error.response?.data?.error?.code === 'CSRF_TOKEN_INVALID') {
+      csrfToken = ''
+    }
+
+    return Promise.reject(normalizeApiError(error))
+  },
 )
 
 export function unwrapData(response) {

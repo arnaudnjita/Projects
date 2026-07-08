@@ -1,0 +1,53 @@
+import apiClient, { unwrapData } from './apiClient'
+
+export async function listProducts(params = {}) {
+  const response = await apiClient.get('/products', { params })
+  return {
+    ...unwrapData(response),
+    meta: response.data?.meta,
+  }
+}
+
+export async function listRecentProducts(params = {}) {
+  const response = await apiClient.get('/products/recent', { params })
+  return unwrapData(response)
+}
+
+export async function getProduct(productId) {
+  const response = await apiClient.get(`/products/${productId}`)
+  return unwrapData(response)
+}
+
+export async function compareProducts(ids) {
+  const response = await apiClient.get('/products/compare', {
+    params: { ids: Array.isArray(ids) ? ids.join(',') : ids },
+  })
+  return unwrapData(response)
+}
+
+export async function listFarmerProducts(params = {}) {
+  const response = await apiClient.get('/farmer/products', { params })
+  return {
+    ...unwrapData(response),
+    meta: response.data?.meta,
+  }
+}
+
+export async function getFarmerProduct(productId) {
+  const response = await apiClient.get(`/farmer/products/${productId}`)
+  return unwrapData(response)
+}
+
+export async function createFarmerProduct(formData) {
+  const response = await apiClient.post('/farmer/products', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return unwrapData(response)
+}
+
+export async function updateFarmerProduct(productId, formData) {
+  const response = await apiClient.put(`/farmer/products/${productId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return unwrapData(response)
+}

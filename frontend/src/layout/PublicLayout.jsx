@@ -2,10 +2,12 @@ import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 
+import { useAuth } from '../auth/useAuth'
 import BrandMark from '../components/BrandMark'
 
 function PublicLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { user } = useAuth()
 
   const closeMenu = () => setMenuOpen(false)
 
@@ -27,18 +29,29 @@ function PublicLayout() {
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
           <nav className={`site-nav ${menuOpen ? 'site-nav--open' : ''}`} id="primary-navigation">
-            <NavLink to="/" onClick={closeMenu}>
+            <NavLink to="/marketplace" onClick={closeMenu}>
               Marketplace
             </NavLink>
-            <NavLink to="/login" onClick={closeMenu}>
-              Login
-            </NavLink>
-            <NavLink to="/register" onClick={closeMenu}>
-              Register
-            </NavLink>
-            <NavLink to="/farmer/dashboard" onClick={closeMenu}>
-              Farmer Dashboard
-            </NavLink>
+            {user ? null : (
+              <>
+                <NavLink to="/login" onClick={closeMenu}>
+                  Login
+                </NavLink>
+                <NavLink to="/register" onClick={closeMenu}>
+                  Register
+                </NavLink>
+              </>
+            )}
+            {user?.role === 'farmer' ? (
+              <NavLink to="/farmer/dashboard" onClick={closeMenu}>
+                Farmer Dashboard
+              </NavLink>
+            ) : null}
+            {import.meta.env.DEV ? (
+              <NavLink to="/dev/components" onClick={closeMenu}>
+                Components
+              </NavLink>
+            ) : null}
           </nav>
         </div>
       </header>

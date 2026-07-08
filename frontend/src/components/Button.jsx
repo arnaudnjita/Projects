@@ -1,9 +1,11 @@
-function Button({ children, className = '', isLoading = false, type = 'button', variant = 'primary', ...props }) {
+function Button({ as: Component = 'button', children, className = '', isLoading = false, type = 'button', variant = 'primary', ...props }) {
+  const buttonProps = Component === 'button' ? { disabled: isLoading || props.disabled, type } : {}
+
   return (
-    <button className={`btn btn--${variant} ${className}`.trim()} disabled={isLoading || props.disabled} type={type} {...props}>
+    <Component className={`btn btn--${variant} ${className}`.trim()} {...buttonProps} {...props}>
       {isLoading ? <span className="spinner spinner--button" aria-hidden="true" /> : null}
       <span>{children}</span>
-    </button>
+    </Component>
   )
 }
 

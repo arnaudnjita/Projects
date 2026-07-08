@@ -1,11 +1,11 @@
 import { Card } from '../components/Feedback'
 
-function PlaceholderPage({ title }) {
+function PlaceholderPage({ description = 'This route is reserved for a future CultivaX frontend milestone.', title }) {
   return (
     <Card>
       <div className="stack">
         <h1>{title}</h1>
-        <p>This route is reserved for the next CultivaX frontend milestone.</p>
+        <p>{description}</p>
       </div>
     </Card>
   )

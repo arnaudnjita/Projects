@@ -1,15 +1,33 @@
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../auth/useAuth'
 import BrandMark from '../components/BrandMark'
+import Button from '../components/Button'
 
 function PublicLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user } = useAuth()
+  const [loggingOut, setLoggingOut] = useState(false)
+  const { logout, user } = useAuth()
+  const navigate = useNavigate()
 
   const closeMenu = () => setMenuOpen(false)
+
+  async function handleLogout() {
+    if (loggingOut) {
+      return
+    }
+
+    setLoggingOut(true)
+    try {
+      await logout()
+      closeMenu()
+      navigate('/marketplace', { replace: true })
+    } finally {
+      setLoggingOut(false)
+    }
+  }
 
   return (
     <div className="site-shell">
@@ -46,6 +64,11 @@ function PublicLayout() {
               <NavLink to="/farmer/dashboard" onClick={closeMenu}>
                 Farmer Dashboard
               </NavLink>
+            ) : null}
+            {user ? (
+              <Button className="site-nav__logout" isLoading={loggingOut} onClick={handleLogout} variant="ghost">
+                Logout
+              </Button>
             ) : null}
             {import.meta.env.DEV ? (
               <NavLink to="/dev/components" onClick={closeMenu}>

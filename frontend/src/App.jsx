@@ -8,8 +8,12 @@ import { FarmerOnlyRoute, GuestOnlyRoute } from './routes/RouteGuards'
 import './App.css'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RoutePlaceholderPage = lazy(() => import('./pages/RoutePlaceholderPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
 
 const pageDescriptions = {
   compare: 'Compare selected CultivaX products side by side.',
@@ -54,10 +58,10 @@ function placeholder(title, description) {
   )
 }
 
-function guestPlaceholder(title, description) {
+function guestPage(children) {
   return (
     <GuestOnlyRoute>
-      {placeholder(title, description)}
+      <LazyRoute>{children}</LazyRoute>
     </GuestOnlyRoute>
   )
 }
@@ -96,19 +100,19 @@ const router = createBrowserRouter([
         path: 'compare',
       },
       {
-        element: guestPlaceholder('Login', pageDescriptions.login),
+        element: guestPage(<LoginPage />),
         path: 'login',
       },
       {
-        element: guestPlaceholder('Register', pageDescriptions.register),
+        element: guestPage(<RegisterPage />),
         path: 'register',
       },
       {
-        element: guestPlaceholder('Forgot Password', pageDescriptions.forgotPassword),
+        element: guestPage(<ForgotPasswordPage />),
         path: 'forgot-password',
       },
       {
-        element: guestPlaceholder('Reset Password', pageDescriptions.resetPassword),
+        element: guestPage(<ResetPasswordPage />),
         path: 'reset-password',
       },
       {

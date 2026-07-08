@@ -11,6 +11,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'))
 const RoutePlaceholderPage = lazy(() => import('./pages/RoutePlaceholderPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
@@ -97,7 +98,11 @@ const router = createBrowserRouter([
         path: 'marketplace',
       },
       {
-        element: placeholder('Product Detail', pageDescriptions.productDetail),
+        element: (
+          <LazyRoute>
+            <ProductDetailPage />
+          </LazyRoute>
+        ),
         path: 'products/:productId',
       },
       {

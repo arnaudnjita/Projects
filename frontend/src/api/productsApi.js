@@ -40,16 +40,12 @@ export async function getFarmerProduct(productId) {
 }
 
 export async function createFarmerProduct(formData) {
-  const response = await apiClient.post('/farmer/products', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const response = await apiClient.post('/farmer/products', formData)
   return unwrapData(response)
 }
 
 export async function updateFarmerProduct(productId, formData) {
-  const response = await apiClient.put(`/farmer/products/${productId}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const response = await apiClient.put(`/farmer/products/${productId}`, formData)
   return unwrapData(response)
 }
 

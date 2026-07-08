@@ -10,6 +10,7 @@ import './App.css'
 const HomePage = lazy(() => import('./pages/HomePage'))
 const ComparePage = lazy(() => import('./pages/ComparePage'))
 const FarmerDashboardPage = lazy(() => import('./pages/FarmerDashboardPage'))
+const FarmerProductFormPage = lazy(() => import('./pages/FarmerProductFormPage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
@@ -146,11 +147,23 @@ const router = createBrowserRouter([
         path: 'farmer/profile',
       },
       {
-        element: farmerPlaceholder('New Product', pageDescriptions.newProduct),
+        element: (
+          <FarmerOnlyRoute>
+            <LazyRoute>
+              <FarmerProductFormPage mode="new" />
+            </LazyRoute>
+          </FarmerOnlyRoute>
+        ),
         path: 'farmer/products/new',
       },
       {
-        element: farmerPlaceholder('Edit Product', pageDescriptions.editProduct),
+        element: (
+          <FarmerOnlyRoute>
+            <LazyRoute>
+              <FarmerProductFormPage mode="edit" />
+            </LazyRoute>
+          </FarmerOnlyRoute>
+        ),
         path: 'farmer/products/:productId/edit',
       },
       {

@@ -738,6 +738,114 @@
   padding: var(--space-4);
 }
 
+.compare-tray {
+  align-items: center;
+  background: var(--color-green-900);
+  border-radius: var(--radius-lg);
+  bottom: var(--space-4);
+  box-shadow: var(--shadow-md);
+  color: var(--color-cream-100);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  left: 50%;
+  padding: var(--space-4);
+  position: fixed;
+  transform: translateX(-50%);
+  width: min(42rem, calc(100vw - 2rem));
+  z-index: 25;
+}
+
+.compare-tray p {
+  color: rgb(247 248 244 / 0.82);
+}
+
+.compare-tray__title {
+  align-items: center;
+  display: flex;
+  font-weight: 900;
+  gap: var(--space-2);
+}
+
+.compare-tray__actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.compare-tray__actions .btn {
+  flex: 1;
+}
+
+.comparison-page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.comparison-scroll-hint {
+  background: var(--color-success-bg);
+  border-radius: var(--radius-md);
+  color: var(--color-green-900);
+  font-weight: 800;
+  padding: var(--space-3) var(--space-4);
+}
+
+.comparison-table-wrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.comparison-table {
+  border-collapse: collapse;
+  min-width: 48rem;
+  width: 100%;
+}
+
+.comparison-table caption {
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.comparison-table th,
+.comparison-table td {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4);
+  text-align: left;
+  vertical-align: top;
+}
+
+.comparison-table thead th,
+.comparison-table tbody th {
+  color: var(--color-green-900);
+  font-weight: 900;
+}
+
+.comparison-table tbody th {
+  background: #fbfcf8;
+  min-width: 9rem;
+}
+
+.comparison-table__product-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  min-width: 10rem;
+}
+
+.comparison-table__image {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  width: 10rem;
+}
+
 .modal-backdrop {
   align-items: center;
   background: rgb(11 46 32 / 0.55);
@@ -846,6 +954,15 @@
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
+  }
+
+  .compare-tray {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .compare-tray__actions {
+    width: auto;
   }
 }
 

@@ -8,6 +8,7 @@ import { FarmerOnlyRoute, GuestOnlyRoute } from './routes/RouteGuards'
 import './App.css'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
+const ComparePage = lazy(() => import('./pages/ComparePage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
@@ -106,7 +107,11 @@ const router = createBrowserRouter([
         path: 'products/:productId',
       },
       {
-        element: placeholder('Compare Products', pageDescriptions.compare),
+        element: (
+          <LazyRoute>
+            <ComparePage />
+          </LazyRoute>
+        ),
         path: 'compare',
       },
       {

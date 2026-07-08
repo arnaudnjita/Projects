@@ -18,9 +18,10 @@ export async function getProduct(productId, options = {}) {
   return unwrapData(response)
 }
 
-export async function compareProducts(ids) {
+export async function compareProducts(ids, options = {}) {
   const response = await apiClient.get('/products/compare', {
     params: { ids: Array.isArray(ids) ? ids.join(',') : ids },
+    signal: options.signal,
   })
   return unwrapData(response)
 }

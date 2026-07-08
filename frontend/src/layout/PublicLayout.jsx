@@ -5,6 +5,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import BrandMark from '../components/BrandMark'
 import Button from '../components/Button'
+import CompareTray from '../marketplace/CompareTray'
 
 function PublicLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -81,6 +82,7 @@ function PublicLayout() {
       <main className="main-container">
         <Outlet />
       </main>
+      <CompareTray />
       <footer className="site-footer">
         <div className="site-footer__inner">
           <BrandMark />

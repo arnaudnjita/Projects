@@ -1,52 +1,59 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-const storageKey = 'cultivax.compareProductIds'
-const maxCompareProducts = 4
-
-function readStoredIds() {
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(storageKey) || '[]')
-    return Array.isArray(parsed) ? parsed.filter(Number.isInteger).slice(0, maxCompareProducts) : []
-  } catch {
-    return []
-  }
-}
-
-function writeStoredIds(ids) {
-  window.localStorage.setItem(storageKey, JSON.stringify(ids.slice(0, maxCompareProducts)))
-}
+import {
+  compareSelectionEvent,
+  maxCompareProducts,
+  readCompareIds,
+  toggleCompareId,
+  writeCompareIds,
+} from './compareStorage'
 
 export function useCompareSelection() {
-  const [selectedIds, setSelectedIds] = useState(() => readStoredIds())
+  const [selectedIds, setSelectedIds] = useState(() => readCompareIds())
 
   useEffect(() => {
-    writeStoredIds(selectedIds)
-  }, [selectedIds])
+    function handleSelectionChange(event) {
+      setSelectedIds(Array.isArray(event.detail) ? event.detail : readCompareIds())
+    }
+
+    window.addEventListener(compareSelectionEvent, handleSelectionChange)
+    return () => window.removeEventListener(compareSelectionEvent, handleSelectionChange)
+  }, [])
 
   const toggleProduct = useCallback((productId) => {
     setSelectedIds((current) => {
-      if (current.includes(productId)) {
-        return current.filter((id) => id !== productId)
-      }
-
-      if (current.length >= maxCompareProducts) {
-        return current
-      }
-
-      return [...current, productId]
+      const nextIds = toggleCompareId(current, productId)
+      writeCompareIds(nextIds)
+      return nextIds
     })
+  }, [])
+
+  const removeProduct = useCallback((productId) => {
+    setSelectedIds((current) => {
+      const nextIds = current.filter((id) => id !== Number(productId))
+      writeCompareIds(nextIds)
+      return nextIds
+    })
+  }, [])
+
+  const clearSelection = useCallback(() => {
+    writeCompareIds([])
+    setSelectedIds([])
   }, [])
 
   return useMemo(
     () => ({
+      canCompare: selectedIds.length >= 2,
+      clearSelection,
       isSelected(productId) {
         return selectedIds.includes(productId)
       },
       maxCompareProducts,
+      removeProduct,
       selectedCount: selectedIds.length,
       selectedIds,
       toggleProduct,
     }),
-    [selectedIds, toggleProduct],
+    [clearSelection, removeProduct, selectedIds, toggleProduct],
   )
 }

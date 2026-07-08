@@ -11,6 +11,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const ComparePage = lazy(() => import('./pages/ComparePage'))
 const FarmerDashboardPage = lazy(() => import('./pages/FarmerDashboardPage'))
 const FarmerProductFormPage = lazy(() => import('./pages/FarmerProductFormPage'))
+const FarmerProfilePage = lazy(() => import('./pages/FarmerProfilePage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
@@ -68,14 +69,6 @@ function guestPage(children) {
     <GuestOnlyRoute>
       <LazyRoute>{children}</LazyRoute>
     </GuestOnlyRoute>
-  )
-}
-
-function farmerPlaceholder(title, description) {
-  return (
-    <FarmerOnlyRoute>
-      {placeholder(title, description)}
-    </FarmerOnlyRoute>
   )
 }
 
@@ -143,7 +136,13 @@ const router = createBrowserRouter([
         path: 'farmer/dashboard',
       },
       {
-        element: farmerPlaceholder('Farmer Profile', pageDescriptions.profile),
+        element: (
+          <FarmerOnlyRoute>
+            <LazyRoute>
+              <FarmerProfilePage />
+            </LazyRoute>
+          </FarmerOnlyRoute>
+        ),
         path: 'farmer/profile',
       },
       {

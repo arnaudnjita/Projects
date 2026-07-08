@@ -11,8 +11,6 @@ export async function updateFarmerProfile(payload) {
 }
 
 export async function uploadFarmerProfilePhoto(formData) {
-  const response = await apiClient.post('/farmers/me/profile/photo', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const response = await apiClient.post('/farmers/me/profile/photo', formData)
   return unwrapData(response)
 }
